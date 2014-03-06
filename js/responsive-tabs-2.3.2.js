@@ -80,7 +80,7 @@ fakewaffle.responsiveTabs = function (collapseDisplayed, containerID) {
 
         $tabGroup.next().after(collapseDiv);
         $tabGroup.addClass(hidden);
-        $(containerID+'.tab-content.responsive'+).addClass(hidden);
+        $(containerID+'.tab-content.responsive').addClass(hidden);
     });
 
     fakewaffle.checkResize();
