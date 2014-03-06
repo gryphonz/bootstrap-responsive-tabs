@@ -2,17 +2,23 @@ if (fakewaffle === undefined) {
     var fakewaffle = {};
 }
 
-fakewaffle.responsiveTabs = function (collapseDisplayed) {
+fakewaffle.responsiveTabs = function (collapseDisplayed, containerID) {
     "use strict";
     fakewaffle.currentPosition = 'tabs';
-
-    var tabGroups = $('.nav-tabs.responsive'),
-        hidden    = '',
-        visible   = '';
-
+    
     if (collapseDisplayed === undefined) {
         collapseDisplayed = ['phone', 'tablet'];
     }
+    if(containerID === undefined){
+        containerID = "";
+    }
+    else{
+        containerID = "#"+containerID+' ';
+    }
+    
+    var tabGroups = $(containerID+'.nav-tabs.responsive'),
+        hidden    = '',
+        visible   = '';
 
     $.each(collapseDisplayed, function () {
         hidden  += ' hidden-' + this;
@@ -74,7 +80,7 @@ fakewaffle.responsiveTabs = function (collapseDisplayed) {
 
         $tabGroup.next().after(collapseDiv);
         $tabGroup.addClass(hidden);
-        $('.tab-content.responsive').addClass(hidden);
+        $(containerID+'.tab-content.responsive'+).addClass(hidden);
     });
 
     fakewaffle.checkResize();
@@ -95,7 +101,7 @@ fakewaffle.checkResize = function () {
 
 fakewaffle.toggleResponsiveTabContent = function () {
     "use strict";
-    var tabGroups = $('.nav-tabs.responsive');
+    var tabGroups = $(containerID+'.nav-tabs.responsive');
 
     $.each(tabGroups, function () {
         var tabs = $(this).find('li a');
@@ -116,8 +122,8 @@ fakewaffle.toggleResponsiveTabContent = function () {
 
 fakewaffle.bindTabToCollapse = function () {
     "use strict";
-    var tabs     = $('.nav-tabs.responsive').find('li a'),
-        collapse = $(".accordion.responsive").find('.accordion-body');
+    var tabs     = $(containerID+'.nav-tabs.responsive').find('li a'),
+        collapse = $(containerID+".accordion.responsive").find('.accordion-body');
 
     tabs.on('shown', function (e) {
         var $current  = $($(e.target)[0].hash.replace(/#/, '#collapse-'));
