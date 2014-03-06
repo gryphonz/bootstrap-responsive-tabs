@@ -101,7 +101,7 @@ fakewaffle.checkResize = function () {
 
 fakewaffle.toggleResponsiveTabContent = function () {
     "use strict";
-    var tabGroups = $(containerID+'.nav-tabs.responsive');
+    var tabGroups = $('.nav-tabs.responsive');
 
     $.each(tabGroups, function () {
         var tabs = $(this).find('li a');
@@ -122,8 +122,8 @@ fakewaffle.toggleResponsiveTabContent = function () {
 
 fakewaffle.bindTabToCollapse = function () {
     "use strict";
-    var tabs     = $(containerID+'.nav-tabs.responsive').find('li a'),
-        collapse = $(containerID+".accordion.responsive").find('.accordion-body');
+    var tabs     = $('.nav-tabs.responsive').find('li a'),
+        collapse = $(".accordion.responsive").find('.accordion-body');
 
     tabs.on('shown', function (e) {
         var $current  = $($(e.target)[0].hash.replace(/#/, '#collapse-'));
