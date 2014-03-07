@@ -7,7 +7,7 @@ fakewaffle.responsiveTabs = function (collapseDisplayed, containerID) {
     fakewaffle.currentPosition = 'tabs';
     
     if (collapseDisplayed === undefined) {
-        collapseDisplayed = ['phone', 'tablet'];
+        collapseDisplayed = ['xs', 'sm'];
     }
     if(containerID === undefined){
         containerID = "";
@@ -19,7 +19,7 @@ fakewaffle.responsiveTabs = function (collapseDisplayed, containerID) {
     var tabGroups = $(containerID+'.nav-tabs.responsive'),
         hidden    = '',
         visible   = '';
-
+        
     $.each(collapseDisplayed, function () {
         hidden  += ' hidden-' + this;
         visible += ' visible-' + this;
@@ -29,7 +29,7 @@ fakewaffle.responsiveTabs = function (collapseDisplayed, containerID) {
         var $tabGroup   = $(this),
             tabs        = $tabGroup.find('li a'),
             collapseDiv = $("<div></div>", {
-                "class" : "accordion responsive" + visible,
+                "class" : "panel-group responsive" + visible,
                 "id"    : 'collapse-' + $tabGroup.attr('id')
             });
 
@@ -39,7 +39,7 @@ fakewaffle.responsiveTabs = function (collapseDisplayed, containerID) {
                 oldLinkClass   = $this.attr('class') === undefined ? '' : $this.attr('class'),
                 newLinkClass   = 'accordion-toggle',
                 oldParentClass = $this.parent().attr('class') === undefined ? '' : $this.parent().attr('class'),
-                newParentClass = 'accordion-group';
+                newParentClass = 'panel panel-default';
 
             if (oldLinkClass.length > 0) {
                 newLinkClass += ' ' + oldLinkClass;
@@ -58,21 +58,23 @@ fakewaffle.responsiveTabs = function (collapseDisplayed, containerID) {
 
             collapseDiv.append(
                 $('<div>').attr('class', newParentClass).html(
-                    $('<div>').attr('class', 'accordion-heading').html(
-                        $('<a>', {
-                            'class' : newLinkClass,
-                            'data-toggle': 'collapse',
-                            'data-parent' : '#collapse-' + $tabGroup.attr('id'),
-                            'href' : '#collapse-' + $this.attr('href').replace(/#/g, ''),
-                            'html': $this.html()
-                        })
+                    $('<div>').attr('class', 'panel-heading').html(
+                        $('<h4>').attr('class', 'panel-title').html(
+                            $('<a>', {
+                                'class' : newLinkClass,
+                                'data-toggle': 'collapse',
+                                'data-parent' : '#collapse-' + $tabGroup.attr('id'),
+                                'href' : '#collapse-' + $this.attr('href').replace(/#/g, ''),
+                                'html': $this.html()
+                            })
+                        )
                     )
                 ).append(
                     $('<div>', {
                         'id' : 'collapse-' + $this.attr('href').replace(/#/g, ''),
-                        'class' : 'accordion-body collapse' + active
+                        'class' : 'panel-collapse collapse' + active
                     }).html(
-                        $('<div>').attr('class', 'accordion-inner').html('')
+                        $('<div>').attr('class', 'panel-body').html('')
                     )
                 )
             );
@@ -83,25 +85,24 @@ fakewaffle.responsiveTabs = function (collapseDisplayed, containerID) {
         $(containerID+'.tab-content.responsive').addClass(hidden);
     });
 
-    fakewaffle.checkResize();
-    fakewaffle.bindTabToCollapse();
+    fakewaffle.checkResize(containerID);
+    fakewaffle.bindTabToCollapse(containerID);
 };
 
-fakewaffle.checkResize = function () {
+fakewaffle.checkResize = function (cid) {
     "use strict";
-    if ($(".accordion.responsive").is(":visible") === true && fakewaffle.currentPosition === 'tabs') {
-        fakewaffle.toggleResponsiveTabContent();
+    if ($(".panel-group.responsive").is(":visible") === true && fakewaffle.currentPosition === 'tabs') {
+        fakewaffle.toggleResponsiveTabContent(cid);
         fakewaffle.currentPosition = 'panel';
-    } else if ($(".accordion.responsive").is(":visible") === false && fakewaffle.currentPosition === 'panel') {
-        fakewaffle.toggleResponsiveTabContent();
+    } else if ($(".panel-group.responsive").is(":visible") === false && fakewaffle.currentPosition === 'panel') {
+        fakewaffle.toggleResponsiveTabContent(cid);
         fakewaffle.currentPosition = 'tabs';
     }
-
 };
 
-fakewaffle.toggleResponsiveTabContent = function () {
+fakewaffle.toggleResponsiveTabContent = function (cid) {
     "use strict";
-    var tabGroups = $('.nav-tabs.responsive');
+    var tabGroups = $(cid+'.nav-tabs.responsive');
 
     $.each(tabGroups, function () {
         var tabs = $(this).find('li a');
@@ -120,25 +121,22 @@ fakewaffle.toggleResponsiveTabContent = function () {
     });
 };
 
-fakewaffle.bindTabToCollapse = function () {
+fakewaffle.bindTabToCollapse = function (cid) {
     "use strict";
-    var tabs     = $('.nav-tabs.responsive').find('li a'),
-        collapse = $(".accordion.responsive").find('.accordion-body');
+    var tabs     = $(cid+'.nav-tabs.responsive').find('li a'),
+        collapse = $(cid+".panel-group.responsive").find('.panel-collapse');
 
-    tabs.on('shown', function (e) {
+    tabs.on('shown.bs.tab', function (e) {
         var $current  = $($(e.target)[0].hash.replace(/#/, '#collapse-'));
+        $current.collapse('show');
 
-        if (!$current.hasClass('in')) {
-            $current.addClass('in').height('auto');
-        }
-
-        if (e.relatedTarget) {
+        if(e.relatedTarget){
             var $previous = $($(e.relatedTarget)[0].hash.replace(/#/, '#collapse-'));
-            $previous.removeClass('in').height('0px');
-        };
+            $previous.collapse('hide');
+        }
     });
 
-    collapse.on('shown', function (e) {
+    collapse.on('show.bs.collapse', function (e) {
         var current = $(e.target).context.id.replace(/collapse-/g, '#');
 
         $('a[href="' + current + '"]').tab('show');
