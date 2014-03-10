@@ -1,11 +1,7 @@
-if (fakewaffle === undefined) {
-    var fakewaffle = {};
-}
-
-fakewaffle.responsiveTabs = function (collapseDisplayed, containerID) {
+function ResponsiveTabs(collapseDisplayed, containerID){
     "use strict";
-    fakewaffle.currentPosition = 'tabs';
-    
+    this.currentPosition = 'tabs';
+	var th = this; 
     if (collapseDisplayed === undefined) {
         collapseDisplayed = ['xs', 'sm'];
     }
@@ -15,8 +11,8 @@ fakewaffle.responsiveTabs = function (collapseDisplayed, containerID) {
     else{
         containerID = "#"+containerID+' ';
     }
-    
-    var tabGroups = $(containerID+'.nav-tabs.responsive'),
+    this.cid = containerID;
+    var tabGroups = $(this.cid+'.nav-tabs.responsive'),
         hidden    = '',
         visible   = '';
         
@@ -82,68 +78,62 @@ fakewaffle.responsiveTabs = function (collapseDisplayed, containerID) {
 
         $tabGroup.next().after(collapseDiv);
         $tabGroup.addClass(hidden);
-        $(containerID+'.tab-content.responsive').addClass(hidden);
+        $(th.cid+'.tab-content.responsive').addClass(hidden);
     });
-
-    fakewaffle.checkResize(containerID);
-    fakewaffle.bindTabToCollapse(containerID);
-};
-
-fakewaffle.checkResize = function (cid) {
-    "use strict";
-    if ($(".panel-group.responsive").is(":visible") === true && fakewaffle.currentPosition === 'tabs') {
-        fakewaffle.toggleResponsiveTabContent(cid);
-        fakewaffle.currentPosition = 'panel';
-    } else if ($(".panel-group.responsive").is(":visible") === false && fakewaffle.currentPosition === 'panel') {
-        fakewaffle.toggleResponsiveTabContent(cid);
-        fakewaffle.currentPosition = 'tabs';
-    }
-};
-
-fakewaffle.toggleResponsiveTabContent = function (cid) {
-    "use strict";
-    var tabGroups = $(cid+'.nav-tabs.responsive');
-
-    $.each(tabGroups, function () {
-        var tabs = $(this).find('li a');
-
-        $.each(tabs, function () {
-            var href         = $(this).attr('href').replace(/#/g, ''),
-                tabId        = "#" + href,
-                panelId      = "#collapse-" + href,
-                tabContent   = $(tabId).html(),
-                panelContent = $(panelId + " div:first-child").html();
-
-            $(tabId).html(panelContent);
-            $(panelId + " div:first-child").html(tabContent);
-        });
-
-    });
-};
-
-fakewaffle.bindTabToCollapse = function (cid) {
-    "use strict";
-    var tabs     = $(cid+'.nav-tabs.responsive').find('li a'),
-        collapse = $(cid+".panel-group.responsive").find('.panel-collapse');
-
-    tabs.on('shown.bs.tab', function (e) {
-        var $current  = $($(e.target)[0].hash.replace(/#/, '#collapse-'));
-        $current.collapse('show');
-
-        if(e.relatedTarget){
-            var $previous = $($(e.relatedTarget)[0].hash.replace(/#/, '#collapse-'));
-            $previous.collapse('hide');
-        }
-    });
-
-    collapse.on('show.bs.collapse', function (e) {
-        var current = $(e.target).context.id.replace(/collapse-/g, '#');
-
-        $('a[href="' + current + '"]').tab('show');
-    });
+       
+	this.checkResize = function () {
+	    if ($(".panel-group.responsive").is(":visible") === true && th.currentPosition === 'tabs') {
+	        this.toggleResponsiveTabContent();
+	        th.currentPosition = 'panel';
+	    } 
+	    else if ($(".panel-group.responsive").is(":visible") === false && th.currentPosition === 'panel') {
+	        this.toggleResponsiveTabContent();
+	        th.currentPosition = 'tabs';
+	    }
+	};
+	
+	this.toggleResponsiveTabContent = function () {
+	    var tabGroups = $(th.cid+'.nav-tabs.responsive');
+	    $.each(tabGroups, function () {
+	        var tabs = $(this).find('li a');
+	
+	        $.each(tabs, function () {
+	            var href         = $(this).attr('href').replace(/#/g, ''),
+	                tabId        = "#" + href,
+	                panelId      = "#collapse-" + href,
+	                tabContent   = $(th.cid+tabId).html(),
+	                panelContent = $(th.cid+panelId + " div:first-child").html();
+	
+	            $(th.cid+tabId).html(tabContent);	            
+	            $(th.cid+panelId + " div:first-child").html(tabContent);
+	        });
+	    });
+	};
+	
+	this.bindTabToCollapse = function () {
+	    "use strict";
+	    var tabs     = $(th.cid+'.nav-tabs.responsive').find('li a'),
+	        collapse = $(th.cid+".panel-group.responsive").find('.panel-collapse');
+	
+	    tabs.on('shown.bs.tab', function (e) {
+	        var $current  = $($(e.target)[0].hash.replace(/#/, '#collapse-'));
+	        $current.collapse('show');
+	
+	        if(e.relatedTarget){
+	            var $previous = $($(e.relatedTarget)[0].hash.replace(/#/, '#collapse-'));
+	            $previous.collapse('hide');
+	        }
+	    });
+	
+	    collapse.on('show.bs.collapse', function (e) {
+	        var current = $(e.target).context.id.replace(/collapse-/g, '#');
+	
+	        $('a[href="' + current + '"]').tab('show');
+	    });
+	}
+	this.checkResize();
+    this.bindTabToCollapse();
+    $(window).resize(function () {
+	    th.checkResize();
+	});
 }
-
-$(window).resize(function () {
-    "use strict";
-    fakewaffle.checkResize();
-});
